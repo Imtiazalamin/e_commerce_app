@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}MDK E-Commerce{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    .category-select {
+      width: 150px;
+    }
+    .active-category {
+      background-color: #0d6efd;
+      color: white !important;
+    }
+    .navbar-brand img {
+      max-height: 40px;
+    }
+    footer {
+      margin-top: 2rem;
+      padding: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="bg-dark text-white py-1 px-3 d-flex justify-content-between small">
+    <span>Telephone Enquiry: 7198375135</span>
+    <span>Currency: USD $ | Language: English</span>
+  </div>
+
+  <!-- Navbar + Search -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4">
+    <a class="navbar-brand" href="{% url 'ecommerceapp:product_list' %}">
+      <img src="{% static 'images/logo.png' %}" alt="Logo" class="img-fluid"> MDK E-Commerce
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{% url 'ecommerceapp:product_list' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'ecommerceapp:about' %}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'ecommerceapp:product_list' %}">Shop</a></li>
+      </ul>
+
+      <!-- Search Form -->
+      <form class="d-flex me-3" method="GET" action="{% url 'ecommerceapp:product_search' %}">
+        <select name="category" class="form-select me-2 category-select">
+          <option value="">All Categories</option>
+          {% for cat in categories %}
+            <option value="{{ cat.slug }}" {% if category and category.slug == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+        <input class="form-control me-2" type="search" placeholder="Search products..." name="q" required>
+        <button class="btn btn-light" type="submit"><i class="bi bi-search"></i></button>
+      </form>
+
+      <!-- Wishlist -->
+      <a href="{% url 'ecommerceapp:wishlist' %}" class="btn btn-outline-light me-2 position-relative">
+        <i class="bi bi-heart"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge bg-warning">0</span>
+      </a>
+
+      <!-- Cart -->
+      <a href="{% url 'ecommerceapp:cart' %}" class="btn btn-danger position-relative">
+        <i class="bi bi-cart"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge bg-warning">2</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Layout -->
+  <div class="container-fluid mt-4">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-lg-3 mb-4">
+        <div class="card">
+          <div class="card-header bg-warning fw-bold">Categories</div>
+          <ul class="list-group list-group-flush">
+            {% for cat in categories %}
+              <li class="list-group-item {% if category and category.slug == cat.slug %}active-category{% endif %}">
+                <a href="{% url 'ecommerceapp:product_list_by_category' cat.slug %}" 
+                   class="text-decoration-none {% if category and category.slug == cat.slug %}text-white{% else %}text-dark{% endif %}">
+                  {{ cat.name }}
+                </a>
+              </li>
+            {% empty %}
+              <li class="list-group-item text-muted">No categories available</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-9">
+        {% block content %}
+        <!-- Page specific content will go here -->
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-light text-center py-3 mt-5">
+    © 2025 MDK E-Commerce. All rights reserved.
+  </footer>
+
+  <!-- Bootstrap Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

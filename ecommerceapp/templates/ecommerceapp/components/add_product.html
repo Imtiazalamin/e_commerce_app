@@ -1,0 +1,29 @@
+{% extends 'ecommerceapp/base.html' %}
+
+{% block title %}Add New Product – MDK E-Commerce{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Add New Product</h2>
+  
+  <form method="POST" enctype="multipart/form-data" class="w-100 w-md-75 w-lg-50">
+    {% csrf_token %}
+    
+    <!-- Django form fields rendered with Bootstrap classes -->
+    {% for field in form %}
+      <div class="mb-3">
+        {{ field.label_tag }}
+        {{ field|add_class:"form-control" }}
+        {% if field.help_text %}
+          <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    
+    <button type="submit" class="btn btn-primary">Add Product</button>
+  </form>
+</div>
+{% endblock %}

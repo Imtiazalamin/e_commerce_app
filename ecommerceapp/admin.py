@@ -1,4 +1,5 @@
 from django.contrib import admin
-from .models import ecommerce
+from .models import Ecommerce, Category
 
-admin.site.register(ecommerce)
+admin.site.register(Ecommerce)
+admin.site.register(Category)

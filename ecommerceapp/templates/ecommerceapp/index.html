@@ -1,0 +1,77 @@
+{% extends 'ecommerceapp/base.html' %}
+{% block title %}Home – MDK E-Commerce{% endblock %}
+
+{% block content %}
+<style>
+  .hero {
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
+    border-radius: 12px;
+    margin-bottom: 40px;
+  }
+  .product-card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  .product-img {
+    max-height: 200px;
+    width: auto;
+    object-fit: contain;
+    margin: 0 auto;
+  }
+</style>
+
+<div class="container">
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Welcome to MDK E-Commerce</h1>
+    <p>Discover the best products at unbeatable prices!</p>
+  </section>
+
+  <!-- Product List -->
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 mb-5">
+    {% for product in products %}
+      <div class="col">
+        <div class="product-card h-100">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" class="product-img mb-3 rounded">
+          {% else %}
+            <div class="bg-light mb-3 py-4 d-flex align-items-center justify-content-center">
+              <span class="text-muted">No Image Available</span>
+            </div>
+          {% endif %}
+          <h5 class="fw-bold">{{ product.name }}</h5>
+          <p class="text-muted small">{{ product.description|truncatewords:15 }}</p>
+          <div class="fw-bold text-success">${{ product.price }}</div>
+          <div class="mt-3 d-flex justify-content-center gap-2">
+            <a href="{% url 'ecommerceapp:product_detail' product.id %}" class="btn btn-primary btn-sm">View</a>
+            {% if request.user == product.seller %}
+              <a href="{% url 'ecommerceapp:deleteproduct' product.id %}" class="btn btn-danger btn-sm">Delete</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-warning text-center">
+          No products found.
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
