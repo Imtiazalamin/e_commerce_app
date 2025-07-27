@@ -1,45 +1,34 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.text import slugify
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
 
     def __str__(self):
         return self.name
 
-
-class Ecommerce(models.Model):
-    seller = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
-        # default=1 removed (risky)
-    )
+class Product(models.Model):
+    seller = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     description = models.TextField()
-    price = models.DecimalField(max_digits=8, decimal_places=2)  # max_digits reduced
-    image = models.ImageField(upload_to='products/', blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
-    class Meta:
-        ordering = ['-created_at'] 
-
-
-
-
+class Order(models.Model):
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=50, default='Pending')
     
+
+    def __str__(self):
+        return f"{self.buyer.username} ordered {self.product.name}"
 
 

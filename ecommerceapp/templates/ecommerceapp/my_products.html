@@ -1,0 +1,35 @@
+{% extends 'ecommerceapp/base.html' %}
+{% block title %}My Products{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">My Added Products</h2>
+    
+    <div class="mb-3 text-end">
+        <a href="{% url 'add_product' %}" class="btn btn-success">+ Add New Product</a>
+    </div>
+
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ product.name }}">
+                {% else %}
+                    <div class="p-5 text-center text-muted">No Image</div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text text-muted">৳{{ product.price }}</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'product_detail' product.pk %}" class="btn btn-primary w-100">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted text-center">You haven't added any products yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

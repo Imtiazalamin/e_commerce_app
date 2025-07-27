@@ -1,0 +1,115 @@
+{% extends 'ecommerceapp/base.html' %}
+
+{% block content %}
+<style>
+  .form-section {
+    background: linear-gradient(to right, #e0eafc, #cfdef3);
+    padding: 50px 20px;
+    min-height: 100vh;
+  }
+
+  .form-container {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .form-header {
+    background: linear-gradient(to right, #4e54c8, #8f94fb);
+    color: white;
+    padding: 30px;
+    text-align: center;
+  }
+
+  .form-body {
+    padding: 30px;
+  }
+
+  .form-footer {
+    background-color: #f8f9fa;
+    text-align: center;
+    padding: 15px;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .form-control {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    transition: box-shadow 0.3s;
+  }
+
+  .form-control:focus {
+    box-shadow: 0 0 5px rgba(78, 84, 200, 0.5);
+    border-color: #4e54c8;
+  }
+
+  .btn-primary {
+    background-color: #4e54c8;
+    border: none;
+    font-weight: 600;
+    border-radius: 10px;
+  }
+
+  .btn-primary:hover {
+    background-color: #3b3fc2;
+  }
+
+  .btn-outline-success {
+    border-radius: 10px;
+  }
+
+</style>
+
+<div class="form-section">
+  <div class="container">
+    <div class="form-container mx-auto" style="max-width: 650px;">
+      <div class="form-header">
+        <h2><i class="bi bi-bag-plus"></i> Add New Product</h2>
+      </div>
+
+      <div class="form-body">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          {% for field in form %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+
+          <button type="submit" class="btn btn-primary w-100 mt-3">
+            <i class="bi bi-plus-circle me-1"></i> Add Product
+          </button>
+        </form>
+      </div>
+
+      {% if user.is_authenticated %}
+      <div class="form-footer">
+        <a href="{% url 'add_product' %}" class="btn btn-outline-success">
+          <i class="bi bi-plus-lg"></i> Add Another Product
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

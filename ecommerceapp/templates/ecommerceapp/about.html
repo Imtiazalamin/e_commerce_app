@@ -1,25 +1,125 @@
+{% extends 'ecommerceapp/base.html' %}
+{% block title %}About Us | AL Ecommerce{% endblock %}
+
+{% block extra_css %}
+<style>
+  .about-container {
+    max-width: 900px;
+    margin: 3rem auto;
+    background: #fff;
+    padding: 2rem 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .about-container h2 {
+    color: #004d99;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .about-container p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #444;
+    margin-bottom: 1.5rem;
+    text-align: justify;
+  }
+
+  /* Team Section */
+  .team {
+    margin-top: 3rem;
+  }
+
+  .team h3 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #004d99;
+    font-weight: 700;
+  }
+
+  .team-members {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .team-member {
+    flex: 1 1 200px;
+    max-width: 250px;
+    background: #f0f7ff;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+
+  .team-member:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  }
+
+  .team-member img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    border: 3px solid #004d99;
+  }
+
+  .team-member h4 {
+    margin-bottom: 0.3rem;
+    color: #004d99;
+  }
+
+  .team-member p {
+    font-size: 0.95rem;
+    color: #666;
+  }
+
+  @media (max-width: 600px) {
+    .team-members {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-  <div class="p-4 bg-white rounded shadow-sm">
-    <h2 class="mb-4">About MDK E-Commerce</h2>
-    <p class="lead">
-      MDK E-Commerce is an innovative online marketplace where sellers and buyers can conduct product transactions together.
-      Our strategy is to provide easy service for buyers, easy product addition for sellers, and create a trusted e-commerce experience.
-    </p>
+<div class="about-container">
+  <h2>About Our Store</h2>
+  <p>
+    Welcome to <strong>AL Ecommerce</strong> — your friendly online marketplace! Here sellers can easily register and upload their products, and clients can purchase with just a click. Our platform is designed to keep things simple, clean, and user-friendly so that everyone can shop and sell effortlessly.
+  </p>
 
-    <h4 class="mt-5 mb-3">Our Goals</h4>
-    <ul class="list-group list-group-flush mb-4">
-      <li class="list-group-item">Simple and reliable product buying-selling platform</li>
-      <li class="list-group-item">Separate Dashboard system for both Seller and Client</li>
-      <li class="list-group-item">Future modern payment gateway and order tracking</li>
-    </ul>
+  <p>
+    We believe in building a community where quality products meet great customers. Whether you're a seller looking to grow your business or a client searching for great deals, AL Ecommerce is here to support you every step of the way.
+  </p>
 
-    <h4>Contact Us</h4>
-    <p>
-      Email: <a href="mailto:support@mdk-ecommerce.com">support@mdk-ecommerce.com</a><br>
-      Phone: +880 7198 37513
-    </p>
+  <div class="team">
+    <h3>Meet the Team</h3>
+    <div class="team-members">
+      <div class="team-member">
+        <img src="https://i.pravatar.cc/150?img=10" alt="Md. Alamin" />
+        <h4>Md. Alamin</h4>
+        <p>Founder &amp; Developer</p>
+      </div>
+      <div class="team-member">
+        <img src="https://i.pravatar.cc/150?img=20" alt="Jane Doe" />
+        <h4>Jane Doe</h4>
+        <p>Marketing Lead</p>
+      </div>
+      <div class="team-member">
+        <img src="https://i.pravatar.cc/150?img=30" alt="John Smith" />
+        <h4>John Smith</h4>
+        <p>Customer Support</p>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
-
