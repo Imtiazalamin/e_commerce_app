@@ -122,7 +122,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # jodi user login na kore tahole take login ai rakho
 LOGIN_URL = 'account/login/'
 # jodi kore tahole take akti page a pathao
-LOGIN_RIDIREACT_URL = '/'
+LOGIN_REDIREACT_URL = '/'
+AUTH_USER_MODEL = 'ecommerceapp.User'
 
 
 

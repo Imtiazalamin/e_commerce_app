@@ -5,11 +5,13 @@ from django.contrib.auth import views as auth_views
 from . import views
 from .views import profile_redirect
 
+
 urlpatterns = [
    
     path('about/', views.about_view, name='about'),
 
     # Authentication
+    
     path('register/', views.register_view, name='register'),
     path('account/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name="login"),
     path('logout/', views.logout_view, name='logout_view'),
@@ -30,6 +32,7 @@ urlpatterns = [
     path('my-products/', views.my_products, name='my_products'),
     path('account/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('', views.product_list, name='home'),
+    path('delete/<int:pk>/', views.delete_product, name='delete_product'),
 ]
 
 # Serve media files during development

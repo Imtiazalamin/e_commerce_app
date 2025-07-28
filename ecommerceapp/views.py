@@ -1,9 +1,13 @@
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Product, Category, Order
 from .forms import UserRegisterForm, ProductForm
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.http import HttpResponseForbidden
 
 
 # Home page - product list with optional category filter
@@ -22,30 +26,40 @@ def product_list(request, category_slug=None):
     })
 
 # Register view
-def register_view(request):
-    # user jodi form submit kore mane email username password post kore
-    if request.method == 'POST':
-        # user theke data nibo jemon email username password
-        username = request.POST['username']
-        email = request.POST['email']
-        password = request.POST['password']        
-        # chack korbo ai user age register korche ki na
-        if User.objects.filter(username=username). exists():
-            # jodi thake user register ag theke thahole abar register page dekhabo
-            # r akta error dibo
-            return render(request, 'ecommerceapp/register.html', {'error': 'already an account present'})
-         # jodi user notun hoi tahole create kora hobe 
-        user = User.objects.create_user(username=username, email=email, password=password)
-        # user er data save korbo data base a
-        user.save()
-            # jodi shofol hoi register tahole pathabo login page a 
-        return redirect('login')
-    return render(request, 'ecommerceapp/register.html')    
+# def register_view(request):
+#     # user jodi form submit kore mane email username password post kore
+#     if request.method == 'POST':
+#         # user theke data nibo jemon email username password
+#         username = request.POST['username']
+#         email = request.POST['email']
+#         password = request.POST['password']        
+#         # chack korbo ai user age register korche ki na
+#         if User.objects.filter(username=username). exists():
+#             # jodi thake user register ag theke thahole abar register page dekhabo
+#             # r akta error dibo
+#             return render(request, 'ecommerceapp/register.html', {'error': 'already an account present'})
+#          # jodi user notun hoi tahole create kora hobe 
+#         user = User.objects.create_user(username=username, email=email, password=password)
+#         # user er data save korbo data base a
+#         user.save()
+#             # jodi shofol hoi register tahole pathabo login page a 
+#         return redirect('login')
+#     return render(request, 'ecommerceapp/register.html') 
 
-       
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
+
+def register_view(request):
+    if request.method == "POST": # user submit korbe
+        form = UserRegisterForm(request.POST) # data niya form banano hoiteche
+        if form.is_valid(): # user er totto jodi thik hoi tahole 
+            user = form.save(commit=False) # user object banano hoiteche kintu save kortese na
+            user.user_type = form.cleaned_data['user_type'] # user set kora hoiteche buyer naki seller
+            user.save() # abar buyer naki seller  save kora holo
+            return redirect('login') # login page a pathano hocche
+    else:
+        form = UserRegisterForm() # faka form kora hoiteche
+    return render(request, 'ecommerceapp/register.html', {'form': form}) # register.htm a pathano hoiteche            
+
+    
 
 # Login view
 def login_view(request):
@@ -76,7 +90,7 @@ def profile_redirect(request):
 # Logout
 def logout_view(request):
     logout(request)
-    return redirect('login_view')
+    return redirect('login')
 
 # Product detail
 @login_required
@@ -87,6 +101,9 @@ def product_detail(request, pk):
 # Add product (seller only)
 @login_required
 def add_product(request):
+    if request.user.user_type != 'seller':
+        return HttpResponseForbidden("Only sellers can add products.")
+    
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
@@ -97,6 +114,7 @@ def add_product(request):
     else:
         form = ProductForm()
     return render(request, 'ecommerceapp/add_product.html', {'form': form})
+
 
 # Edit product (seller only)
 @login_required
@@ -128,21 +146,21 @@ from django.shortcuts import render, redirect
 from .forms import ProductForm
 from django.contrib.auth.decorators import login_required
 
-@login_required
-def add_product(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)  # ছবির জন্য request.FILES দরকার
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.seller = request.user
-            product.save()
-            return redirect('home')
-    else:
-        form = ProductForm()
-    return render(request, 'ecommerceapp/add_product.html', {'form': form})
-@login_required
-def home(request):
-    return render(request, 'ecommerceapp/home.html')
+# @login_required
+# def add_product(request):
+#     if request.method == 'POST':
+#         form = ProductForm(request.POST, request.FILES)  # ছবির জন্য request.FILES দরকার
+#         if form.is_valid():
+#             product = form.save(commit=False)
+#             product.seller = request.user
+#             product.save()
+#             return redirect('home')
+#     else:
+#         form = ProductForm()
+#     return render(request, 'ecommerceapp/add_product.html', {'form': form})
+# @login_required
+# def home(request):
+#     return render(request, 'ecommerceapp/home.html')
 
 @login_required
 def about_view(request):
@@ -152,13 +170,14 @@ def about_view(request):
 # user er product tar icon e ana hocche
 @login_required
 def profile_view(request):
-    # শুধু সেই ইউজারের প্রোডাক্টগুলো নিয়ে আসব
-    user_products = Product.objects.filter(user=request.user)
+    if request.user.user_type == 'seller':
+        user_products = Product.objects.filter(seller=request.user)
+        return render(request, 'ecommerceapp/profile.html', {'products': user_products})
+    else:
+        # buyer হলে order list দেখাতে পারো, অথবা আলাদা template
+        orders = Order.objects.filter(buyer=request.user)
+        return render(request, 'ecommerceapp/buyer_profile.html', {'orders': orders})
 
-    context = {
-        'products': user_products,
-    }
-    return render(request, 'ecommerceapp/profile.html', context)
 
 
 
@@ -170,10 +189,30 @@ def my_products(request):
     
 @login_required
 def home_view(request):
-    products = Pdroduct.objects.all().order_by('-created_at')  
+    products = Product.objects.all().order_by('-created_at')  
     return render(request, 'ecommerceapp/index.html', {'products': products})
+@login_required
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
 
+    if request.user.user_type != 'seller':
+        return render(request, 'ecommerceapp/unauthorized.html', {'error': 'Only sellers can delete products'})
 
+    if product.seller != request.user:
+        return render(request, 'ecommerceapp/unauthorized.html', {'error': 'You can only delete your own product'})
+
+    if request.method == 'POST':
+        # ✅ ফাইল ডিলিট করার অংশ
+        if product.image and hasattr(product.image, 'path'):
+            image_path = product.image.path
+            if os.path.exists(image_path):
+                os.remove(image_path)
+
+        product.delete()
+        return redirect('home')
+
+    return render(request, 'ecommerceapp/confirm_delete.html', {'product': product})
+      
          
 
         

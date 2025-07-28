@@ -3,32 +3,48 @@
 {% block title %}My Profile{% endblock %}
 
 {% block content %}
-<div class="container py-5" style="max-width: 900px;">
-  <h2 class="mb-4">My Products</h2>
+<div class="container py-5" style="max-width: 1000px;">
+  {% if is_seller %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">My Products</h2>
+      <a href="{% url 'add_product' %}" class="btn btn-success">+ Add New Product</a>
+    </div>
 
-  <a href="{% url 'add_product' %}" class="btn btn-success mb-4">+ Add New Product</a>
-
-  {% if products %}
-    <div class="row g-4">
-      {% for product in products %}
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          {% if product.image %}
-          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text">{{ product.description|truncatewords:20 }}</p>
-            <p><strong>Price:</strong> ${{ product.price }}</p>
-            <a href="{% url 'edit_product' product.pk %}" class="btn btn-primary btn-sm">Edit</a>
-            <a href="{% url 'delete_product' product.pk %}" class="btn btn-danger btn-sm">Delete</a>
+    {% if products %}
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for product in products %}
+        <div class="col">
+          <div class="card h-100 shadow-sm border-0">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text text-muted">{{ product.description|truncatewords:20 }}</p>
+              <p><strong>Price:</strong> ${{ product.price }}</p>
+            </div>
+            <div class="card-footer bg-white border-0 d-flex justify-content-between">
+              <a href="{% url 'edit_product' product.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
+              <a href="{% url 'delete_product' product.pk %}" class="btn btn-outline-danger btn-sm">Delete</a>
+            </div>
           </div>
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
+    {% else %}
+      <div class="alert alert-warning text-center mt-4">
+        You haven't added any products yet.
+      </div>
+    {% endif %}
+
   {% else %}
-    <p>You have not added any products yet.</p>
+    <div class="text-center">
+      <h2 class="mb-3">Welcome, {{ request.user.username }}!</h2>
+      <p class="lead">You are logged in as a <strong>Buyer</strong>.</p>
+      <p class="text-muted">Browse the product listings and click "Buy Now" to place your order.</p>
+      <a href="{% url 'index' %}" class="btn btn-primary mt-3">Shop Now</a>
+    </div>
   {% endif %}
 </div>
 {% endblock %}
+

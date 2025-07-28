@@ -4,88 +4,167 @@
 
 {% block content %}
 <style>
-  .register-container {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 30px;
-    background-color: #f9f9f9;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  body {
+    background: #eef2f7;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
-  .register-container h2 {
+  .register-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+  }
+
+  .register-card {
+    background-color: #fff;
+    padding: 40px 35px;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    max-width: 450px;
+    width: 100%;
+  }
+
+  .register-card h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-size: 30px;
+    color: #2c3e50;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
     color: #333;
   }
 
-  .register-container input[type="text"],
-  .register-container input[type="email"],
-  .register-container input[type="password"] {
+  .form-group input,
+  .form-group select {
     width: 100%;
-    padding: 12px;
-    margin: 10px 0 15px;
-    border: 1px solid #ccc;
+    padding: 12px 14px;
+    border: 1.5px solid #ccc;
     border-radius: 8px;
-    box-sizing: border-box;
+    font-size: 15px;
+    transition: border-color 0.3s ease;
   }
 
-  .register-container button {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: #007bff;
+    outline: none;
   }
 
-  .register-container button:hover {
-    background-color: #0056b3;
+  .radio-group {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+    margin-bottom: 20px;
   }
 
-  .register-container p {
-    text-align: center;
-    margin-top: 20px;
-  }
-
-  .register-container a {
-    color: #007bff;
-    text-decoration: none;
-  }
-
-  .register-container a:hover {
-    text-decoration: underline;
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
   }
 
   .error-message {
-    color: red;
-    font-size: 14px;
+    color: #d9534f;
     text-align: center;
-    margin-bottom: 10px;
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .register-btn {
+    width: 100%;
+    padding: 13px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 5px;
+  }
+
+  .register-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .form-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 15px;
+    color: #555;
+  }
+
+  .form-footer a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .form-footer a:hover {
+    text-decoration: underline;
   }
 </style>
 
-<div class="register-container">
-  <h2>Create an Account</h2>
+<div class="register-wrapper">
+  <div class="register-card">
+    <h2>Create Your Account</h2>
 
-  <form method="POST">
-    {% csrf_token %}
+    <form method="POST">
+      {% csrf_token %}
+      
+      {% if error %}
+        <div class="error-message">{{ error }}</div>
+      {% endif %}
 
-    {% if error %}
-      <div class="error-message">{{ error }}</div>
-    {% endif %}
+      {% for field in form %}
+        {% if field.name != 'user_type' %}
+          <div class="form-group">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+              <small class="error-message">{{ field.errors|striptags }}</small>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
 
-    <input type="text" name="username" placeholder="Username" required>
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Password" required>
+      <!-- Custom styled radio buttons for user_type -->
+      <div class="form-group">
+        <label>User Type:</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="user_type" value="buyer" {% if form.user_type.value == 'buyer' %}checked{% endif %}>
+            Buyer
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="user_type" value="seller" {% if form.user_type.value == 'seller' %}checked{% endif %}>
+            Seller
+          </label>
+        </div>
+        {% if form.user_type.errors %}
+          <small class="error-message">{{ form.user_type.errors|striptags }}</small>
+        {% endif %}
+      </div>
 
-    <button type="submit">Register</button>
-  </form>
+      <button type="submit" class="register-btn">Register</button>
+    </form>
 
-  <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    <div class="form-footer">
+      Already have an account? <a href="{% url 'login' %}">Login here</a>
+    </div>
+  </div>
 </div>
 {% endblock %}
